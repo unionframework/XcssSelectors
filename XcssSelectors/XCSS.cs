@@ -29,10 +29,15 @@ namespace XcssSelectors
             return new Xcss(selectors, xpaths, combinedXcss, combinedXpath);
         }
 
-        //public Xcss Concat(Xcss xcss2)
-        //{
-        //    string resultXpath = XPathBuilder.Concat(XPath, xcss2.XPath);
-        //    return new Xcss(null, resultXpath);
-        //}
+        public Xcss Concat(Xcss xcss2)
+        {
+            string resultXpath = XPathBuilder.Concat(this.XPath, xcss2.XPath);
+            return new Xcss(null, null, null, resultXpath);
+        }
+
+        public static Xcss FromXPath(string xpath)
+        {
+            return new Xcss(null, null, null, xpath);
+        }
     }
 }
