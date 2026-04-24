@@ -1,4 +1,5 @@
 ﻿using XcssSelectors.Builders;
+using XcssSelectors.Exceptions;
 using XcssSelectors.Parsers;
 
 namespace XcssSelectors
@@ -31,9 +32,29 @@ namespace XcssSelectors
 
         public Xcss Concat(Xcss xcss2)
         {
+            if (this._xpaths != null && this._xpaths.Count() > 1)
+                throw new XcssException($"Cannot concatenate from a union selector as the root part: '{this.Selector}'");
+            if (xcss2._xpaths != null && xcss2._xpaths.Count() > 1)
+                throw new XcssException($"Cannot concatenate a union selector as the relative part: '{xcss2.Selector}'");
+
             string resultXpath = XPathBuilder.Concat(this.XPath, xcss2.XPath);
-            return new Xcss(null, null, null, resultXpath);
+
+            IEnumerable<string>? resultXpaths = this._xpaths != null
+                ? new[] { resultXpath }
+                : null;
+
+            string? resultSelector = this.Selector != null && xcss2.Selector != null
+                ? $"{this.Selector} {xcss2.Selector}"
+                : null;
+            IEnumerable<string>? resultSelectors = resultSelector != null
+                ? new[] { resultSelector }
+                : null;
+
+            return new Xcss(resultSelectors, resultXpaths, resultSelector, resultXpath);
         }
+
+        public static Xcss Concat(string xcss1, string xcss2) =>
+            Parse(xcss1).Concat(Parse(xcss2));
 
         public static Xcss FromXPath(string xpath)
         {

@@ -5,15 +5,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Copyright></Copyright>
+    <Copyright>Copyright (c) 2023 websyncio</Copyright>
     <Description>XCSS selectors support</Description>
-    <Version>1.0.1-beta</Version>
-    <FileVersion>1.0.1</FileVersion>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Version>1.0.4</Version>
+    <FileVersion>1.0.4</FileVersion>
+    <AssemblyVersion>1.0.4</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

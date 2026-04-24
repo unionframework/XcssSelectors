@@ -65,7 +65,7 @@ simpleSelectorSequence:
 
 elementId: Hash elementIdValue;
 
-elementIdValue: Name;
+elementIdValue: ident;
 
 tagName: (typeSelector | universal);
 

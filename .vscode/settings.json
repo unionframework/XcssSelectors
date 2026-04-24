@@ -3,6 +3,7 @@
         "mode": "external",
         "language": "CSharp",
         "listeners": true,
-        "visitors": false
+        "visitors": false,
+        "customClassPath": "${workspaceFolder}/tools/antlr-4.9.3-complete.jar"
     }
 }
