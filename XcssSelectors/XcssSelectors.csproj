@@ -7,9 +7,9 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Copyright></Copyright>
     <Description>XCSS selectors support</Description>
-    <Version>1.0.1-beta</Version>
-    <FileVersion>1.0.1</FileVersion>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <Version>1.0.2-beta</Version>
+    <FileVersion>1.0.2</FileVersion>
+    <AssemblyVersion>1.0.2</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

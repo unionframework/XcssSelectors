@@ -65,11 +65,20 @@ Combinator → XPath axis mapping: ` ` (space) = `descendant::`, `>` = `child::`
 
 ### ANTLR Grammar
 
-Grammars are in `XcssSelectors/Antlr/Xcss/`. The `.g4` files are the source; the `.cs` files are generated output (checked in). If grammars change, regenerate with the VSCode ANTLR4 extension (config in `.vscode/settings.json`: external mode, C#, listeners only, no visitors).
+Grammars are in `XcssSelectors/Antlr/Xcss/`. The `.g4` files are the source; the `.cs` files are generated output (checked in). **Never hand-edit the generated `.cs` files** — always regenerate from the grammar.
+
+#### Regeneration toolchain
+
+Java and the ANTLR4 jar are required. See `.claude/skills/antlr-regen.md` for setup and regeneration instructions.
 
 ### Known Gaps
 
-- `CssBuilder.BuildFromParts()` throws `NotImplementedException` — CSS output is not implemented.
-- `XcssOptions` enum is empty — no option handling exists.
-- Attribute `^=` (prefix) and `$=` (suffix) match styles are modeled but conversion logic is incomplete.
-- `:not()` pseudo-class is stubbed, not implemented.
+| Area | Status |
+|---|---|
+| CSS output (`CssBuilder`) | `CssBuilder.BuildFromParts()` throws `NotImplementedException` |
+| `XcssOptions` enum | Empty — no options implemented |
+| `:not()` pseudo-class | `CollectXcssSelectorsListener.EnterNegation()` throws `NotImplementedException` |
+| `^=` prefix / `$=` suffix attr match | Modeled in `AttributeMatchStyle` but `XPathBuilder.XpathAttributeCondition()` throws `ArgumentOutOfRangeException` |
+| `\|=` (DashMatch) attr style | Parsed by grammar but not handled in listener — throws `ParseCanceledException` |
+| Pseudo-classes (`:first-child`, etc.) | Collected into `Conditions` list on `XcssElementData` but never emitted by `XPathBuilder` |
+| `button[.km-icon]+ul` sub-element with class | Sub-element selector with class compiles to `descendant::*[contains(@class,'km-icon')]` in predicate |

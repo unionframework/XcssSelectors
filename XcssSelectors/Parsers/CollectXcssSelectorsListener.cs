@@ -3,14 +3,15 @@ using XcssSelectors.Models;
 
 namespace XcssSelectors.Parsers
 {
-
     internal class CollectXcssSelectorsListener : AntlrXcssParserBaseListener
     {
         private Stack<XcssSelectorContext> _parentContexts = new Stack<XcssSelectorContext>();
         private XcssSelectorContext _context;
         public List<XcssSelectorData> Selectors = new List<XcssSelectorData>();
 
-        public override void EnterSelectorGroup([NotNull] AntlrXcssParser.SelectorGroupContext context)
+        public override void EnterSelectorGroup(
+            [NotNull] AntlrXcssParser.SelectorGroupContext context
+        )
         {
             Selectors = new List<XcssSelectorData>();
             base.EnterSelectorGroup(context);
@@ -32,13 +33,17 @@ namespace XcssSelectors.Parsers
             base.ExitSelector(context);
         }
 
-        public override void EnterSubelementSelector([NotNull] AntlrXcssParser.SubelementSelectorContext context)
+        public override void EnterSubelementSelector(
+            [NotNull] AntlrXcssParser.SubelementSelectorContext context
+        )
         {
             _parentContexts.Push(_context);
             base.EnterSubelementSelector(context);
         }
 
-        public override void ExitSubelementSelector([NotNull] AntlrXcssParser.SubelementSelectorContext context)
+        public override void ExitSubelementSelector(
+            [NotNull] AntlrXcssParser.SubelementSelectorContext context
+        )
         {
             var parentContext = _parentContexts.Pop();
             parentContext.Element.SubelementConditions.Add(_context.Selector);
@@ -46,8 +51,9 @@ namespace XcssSelectors.Parsers
             base.ExitSubelementSelector(context);
         }
 
-
-        public override void ExitSimpleSelectorSequence([NotNull] AntlrXcssParser.SimpleSelectorSequenceContext context)
+        public override void ExitSimpleSelectorSequence(
+            [NotNull] AntlrXcssParser.SimpleSelectorSequenceContext context
+        )
         {
             _context.Selector.Elements.Add(_context.Element);
             _context.Element = new XcssElementData();
@@ -56,7 +62,7 @@ namespace XcssSelectors.Parsers
 
         public override void EnterCombinator([NotNull] AntlrXcssParser.CombinatorContext context)
         {
-            _context.Element.Combinator = context.GetText();
+            _context.Element.Combinator = context.GetText().Trim();
             base.EnterCombinator(context);
         }
 
@@ -66,7 +72,9 @@ namespace XcssSelectors.Parsers
             base.EnterTagName(context);
         }
 
-        public override void EnterElementIdValue([NotNull] AntlrXcssParser.ElementIdValueContext context)
+        public override void EnterElementIdValue(
+            [NotNull] AntlrXcssParser.ElementIdValueContext context
+        )
         {
             _context.Element.Id = context.GetText();
             base.EnterElementIdValue(context);
@@ -84,7 +92,9 @@ namespace XcssSelectors.Parsers
             base.ExitText(context);
         }
 
-        public override void EnterTextMatchStyle([NotNull] AntlrXcssParser.TextMatchStyleContext context)
+        public override void EnterTextMatchStyle(
+            [NotNull] AntlrXcssParser.TextMatchStyleContext context
+        )
         {
             switch (context.GetText())
             {
@@ -121,7 +131,9 @@ namespace XcssSelectors.Parsers
             base.EnterAttribName(context);
         }
 
-        public override void EnterAttribMatchStyle([NotNull] AntlrXcssParser.AttribMatchStyleContext context)
+        public override void EnterAttribMatchStyle(
+            [NotNull] AntlrXcssParser.AttribMatchStyleContext context
+        )
         {
             switch (context.GetText())
             {
@@ -151,7 +163,9 @@ namespace XcssSelectors.Parsers
             base.EnterAttribValue(context);
         }
 
-        public override void EnterClassNameValue([NotNull] AntlrXcssParser.ClassNameValueContext context)
+        public override void EnterClassNameValue(
+            [NotNull] AntlrXcssParser.ClassNameValueContext context
+        )
         {
             _context.Element.ClassNames.Add(context.GetText());
             base.EnterClassNameValue(context);
@@ -169,7 +183,9 @@ namespace XcssSelectors.Parsers
             //base.EnterNegation(context);
         }
 
-        public override void EnterElementIndex([NotNull] AntlrXcssParser.ElementIndexContext context)
+        public override void EnterElementIndex(
+            [NotNull] AntlrXcssParser.ElementIndexContext context
+        )
         {
             if (_context.Element.Index != null)
             {
@@ -179,17 +195,20 @@ namespace XcssSelectors.Parsers
             base.EnterElementIndex(context);
         }
 
-        public override void EnterXpathCondition([NotNull] AntlrXcssParser.XpathConditionContext context)
+        public override void EnterXpathCondition(
+            [NotNull] AntlrXcssParser.XpathConditionContext context
+        )
         {
             _context.StartXpathCondition(context.GetText());
             base.EnterXpathCondition(context);
         }
 
-        public override void ExitXpathCondition([NotNull] AntlrXcssParser.XpathConditionContext context)
+        public override void ExitXpathCondition(
+            [NotNull] AntlrXcssParser.XpathConditionContext context
+        )
         {
             _context.FinishXpathCondition();
             base.ExitXpathCondition(context);
         }
-
     }
 }
