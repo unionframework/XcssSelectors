@@ -200,7 +200,7 @@ namespace XcssSelectorsTests
         public void Concat_SingleSelectors_PopulatesXPathAndSelector()
         {
             var result = Xcss.Parse("div").Concat(Xcss.Parse("a"));
-            Assert.That(result.XPath,    Is.EqualTo("//div/descendant::a"));
+            Assert.That(result.XPath, Is.EqualTo("//div/descendant::a"));
             Assert.That(result.Selector, Is.EqualTo("div a"));
         }
 
@@ -225,7 +225,31 @@ namespace XcssSelectorsTests
         {
             var result = Xcss.FromXPath("//div").Concat(Xcss.Parse("a"));
             Assert.That(result.Selector, Is.Null);
-            Assert.That(result.XPath,    Is.EqualTo("//div/descendant::a"));
+            Assert.That(result.XPath, Is.EqualTo("//div/descendant::a"));
+        }
+
+        [Test]
+        public void Concat_NestedSelectorReparse_PreservesScope()
+        {
+            // Building a deep selector by re-Parsing each level's .Selector string, Concatenating
+            // the next relative part, then exposing .Selector again must keep every ancestor in
+            // scope. A regression that dropped the root on Concat collapsed the final XPath to a
+            // global leaf match (e.g. //span) instead of staying anchored under .a > [data-row].
+            var levelA = Xcss.Parse(".a div[role='grid']");
+            var levelB = levelA.Concat(Xcss.Parse("table tr[data-row='0']"));
+
+            var levelBReparsed = Xcss.Parse(levelB.Selector);
+            var levelC = levelBReparsed.Concat(Xcss.Parse("span[data-field='x']"));
+
+            var xpath = Xcss.Parse(levelC.Selector).XPath;
+
+            Assert.That(xpath, Does.Contain("contains(@class,'a')"), "must keep the root scope");
+            Assert.That(xpath, Does.Contain("tr[@data-row='0']"), "must keep the mid-level scope");
+            Assert.That(
+                xpath,
+                Does.EndWith("/descendant::span[@data-field='x']"),
+                "the leaf must hang off the scoped ancestors, not be a global //span"
+            );
         }
 
         [TestCase("#")]
@@ -236,16 +260,19 @@ namespace XcssSelectorsTests
             Assert.Throws<XcssParseException>(() => Xcss.Parse(xcssSelector));
         }
 
-        [TestCase("#",         1, 1)]
-        [TestCase("div[",      1, 4)]
+        [TestCase("#", 1, 1)]
+        [TestCase("div[", 1, 4)]
         [TestCase(".foo..bar", 1, 5)]
         public void InvalidSelector_XcssParseException_HasPosition(
-            string selector, int expectedLine, int expectedCol)
+            string selector,
+            int expectedLine,
+            int expectedCol
+        )
         {
             var ex = Assert.Throws<XcssParseException>(() => Xcss.Parse(selector))!;
             Assert.That(ex.Selector, Is.EqualTo(selector));
-            Assert.That(ex.Line,     Is.EqualTo(expectedLine));
-            Assert.That(ex.Column,   Is.EqualTo(expectedCol));
+            Assert.That(ex.Line, Is.EqualTo(expectedLine));
+            Assert.That(ex.Column, Is.EqualTo(expectedCol));
         }
 
         //[TestCase("#myid", "#myid")]
